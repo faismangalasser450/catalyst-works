@@ -231,7 +231,7 @@ class DatabaseSeeder extends Seeder
                 'code' => Complaint::nextCode('CMP-'), 'customer_id' => $cust->id, 'amc_contract_id' => $contract?->id,
                 'location' => ['Flat '.rand(101, 1208), 'Villa '.rand(1, 40), 'Ground floor shop', 'Office '.rand(1, 12), 'Pump room'][rand(0, 4)],
                 'type' => $type, 'equipment' => Complaint::EQUIPMENT[rand(0, 6)],
-                'description' => ['Unit running but no cooling since yesterday', 'Water dripping from the indoor unit', 'Loud noise from outdoor unit at night', 'Unit does not switch on', 'Smell when AC starts', 'Display shows error E4'][rand(0, 5)],
+                'description' => ['Not cooling' => 'Unit running but no cooling since yesterday', 'Water leak' => 'Water dripping from the indoor unit', 'Noise' => 'Loud noise from outdoor unit at night', 'Not starting' => 'Unit does not switch on', 'Bad smell' => 'Smell when AC starts', 'Thermostat / remote' => 'Remote not responding, display blank', 'Gas leak' => 'Cooling weak, oily marks on the pipe joint', 'Other' => 'Display shows error E4'][$type],
                 'priority' => ['low', 'normal', 'normal', 'normal', 'high'][rand(0, 4)],
                 'status' => 'open', 'created_by' => $users[3]->id, 'reported_at' => $reported, 'chargeable' => ! $contract,
                 'created_at' => $reported, 'updated_at' => $reported,
