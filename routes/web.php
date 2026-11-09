@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\ContractController;
+use App\Http\Controllers\PpmController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnquiryController;
 use App\Http\Controllers\InvoiceController;
@@ -58,6 +60,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/invoices/{invoice}/pay', [InvoiceController::class, 'pay'])->name('invoices.pay');
     Route::post('/invoices/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('invoices.cancel');
 
+    Route::get('/contracts', \App\Livewire\Contracts\Index::class)->name('contracts.index');
+    Route::get('/contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');
+    Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update');
+    Route::get('/contracts/{contract}/renew', [ContractController::class, 'renew'])->name('contracts.renew');
+    Route::post('/contracts/{contract}/cancel', [ContractController::class, 'cancel'])->name('contracts.cancel');
+    Route::get('/ppm', \App\Livewire\Ppm\Index::class)->name('ppm.index');
+    Route::post('/ppm/{visit}/done', [PpmController::class, 'done'])->name('ppm.done');
+
     Route::get('/complaints', \App\Livewire\Complaints\Index::class)->name('complaints.index');
     Route::get('/complaints/new', [ComplaintController::class, 'create'])->name('complaints.create');
     Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
@@ -67,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/complaints/{complaint}/assign', [ComplaintController::class, 'assign'])->name('complaints.assign');
     Route::post('/complaints/{complaint}/status', [ComplaintController::class, 'status'])->name('complaints.status');
 
-    foreach (['contracts', 'ppm', 'settings'] as $m) {
+    foreach (['settings'] as $m) {
         Route::view("/$m", 'placeholder', ['title' => ucfirst($m)])->name("$m.index");
         Route::view("/$m/new", 'placeholder', ['title' => 'New '.$m])->name("$m.create");
         Route::get("/$m/{id}", fn () => view('placeholder', ['title' => ucfirst($m)]))->name("$m.show");
