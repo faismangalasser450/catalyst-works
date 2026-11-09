@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'Catalyst Works' }} · Catalyst Works</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body x-data="{ nav: false }" class="min-h-screen">
 <div class="flex min-h-screen">
@@ -74,5 +75,6 @@
         </main>
     </div>
 </div>
+@livewireScripts
 </body>
 </html>
