@@ -37,7 +37,7 @@
     .tbl tbody tr:hover { @apply bg-brand-50/40; }
     .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap; }
     .chip { @apply inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-1 text-[13px] text-slate-700 hover:bg-slate-50 whitespace-nowrap; }
-    .chip-on { @apply border-brand-700 bg-brand-700 text-white hover:bg-brand-700; }
+    .chip-on, .peer:checked + .chip { @apply border-brand-700 bg-brand-700 text-white hover:bg-brand-700; }
     .navlink { @apply flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-slate-200 hover:bg-white/10; }
     .navlink-on { @apply bg-white/15 text-white font-medium; }
     .kpi { @apply rounded-lg border border-slate-200 bg-white shadow-xs p-4; }

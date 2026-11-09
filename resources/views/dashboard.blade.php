@@ -63,7 +63,7 @@
             @php($max = max(1, collect($weeks)->max(fn ($w) => max($w['in'], $w['out']))))
             <div class="flex h-36 items-end gap-1.5">
                 @foreach($weeks as $w)
-                    <div class="flex flex-1 items-end gap-px" title="{{ $w['label'] }}: {{ $w['in'] }} received, {{ $w['out'] }} closed">
+                    <div class="flex h-full flex-1 items-end gap-px" title="{{ $w['label'] }}: {{ $w['in'] }} received, {{ $w['out'] }} closed">
                         <div class="flex-1 rounded-t bg-brand-600" style="height: {{ $w['in'] / $max * 100 }}%"></div>
                         <div class="flex-1 rounded-t bg-green-500" style="height: {{ $w['out'] / $max * 100 }}%"></div>
                     </div>

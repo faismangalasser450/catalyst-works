@@ -23,21 +23,21 @@
         <x-field label="Problem" name="type" required class="sm:col-span-2">
             <div class="flex flex-wrap gap-1.5">
                 @foreach(\App\Models\Complaint::TYPES as $t)
-                    <label class="!mb-0 cursor-pointer"><input type="radio" name="type" value="{{ $t }}" class="peer sr-only" @checked(old('type', $complaint->type) === $t) required><span class="chip peer-checked:chip-on">{{ $t }}</span></label>
+                    <label class="!mb-0 cursor-pointer"><input type="radio" name="type" value="{{ $t }}" class="peer sr-only" @checked(old('type', $complaint->type) === $t) required><span class="chip ">{{ $t }}</span></label>
                 @endforeach
             </div>
         </x-field>
         <x-field label="Equipment" name="equipment" class="sm:col-span-2">
             <div class="flex flex-wrap gap-1.5">
                 @foreach(\App\Models\Complaint::EQUIPMENT as $t)
-                    <label class="!mb-0 cursor-pointer"><input type="radio" name="equipment" value="{{ $t }}" class="peer sr-only" @checked(old('equipment', $complaint->equipment) === $t)><span class="chip peer-checked:chip-on">{{ $t }}</span></label>
+                    <label class="!mb-0 cursor-pointer"><input type="radio" name="equipment" value="{{ $t }}" class="peer sr-only" @checked(old('equipment', $complaint->equipment) === $t)><span class="chip ">{{ $t }}</span></label>
                 @endforeach
             </div>
         </x-field>
         <x-field label="What the customer said" name="description" required class="sm:col-span-2"><textarea name="description" rows="2" class="input" required placeholder="e.g. Unit in the master bedroom not cooling since last night">{{ old('description', $complaint->description) }}</textarea></x-field>
 
         <x-field label="Priority" name="priority" required>
-            <div class="flex gap-1.5">@foreach(\App\Models\Complaint::PRIORITIES as $k => $l)<label class="!mb-0 cursor-pointer"><input type="radio" name="priority" value="{{ $k }}" class="peer sr-only" @checked(old('priority', $complaint->priority) === $k)><span class="chip peer-checked:chip-on">{{ $l }}</span></label>@endforeach</div>
+            <div class="flex gap-1.5">@foreach(\App\Models\Complaint::PRIORITIES as $k => $l)<label class="!mb-0 cursor-pointer"><input type="radio" name="priority" value="{{ $k }}" class="peer sr-only" @checked(old('priority', $complaint->priority) === $k)><span class="chip ">{{ $l }}</span></label>@endforeach</div>
         </x-field>
         <x-field label="Technician" name="technician_id" hint="Optional now, can be assigned from the list later">
             <select name="technician_id" class="input"><option value="">Assign later</option>@foreach($technicians as $t)<option value="{{ $t->id }}" @selected(old('technician_id', $complaint->technician_id) == $t->id)>{{ $t->name }}</option>@endforeach</select>
