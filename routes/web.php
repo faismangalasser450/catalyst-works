@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\PpmController;
 use App\Http\Controllers\CustomerController;
@@ -21,8 +23,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware('auth')->group(function () {
     Route::redirect('/', '/dashboard');
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
-    Route::view('/my', 'placeholder', ['title' => 'My jobs'])->name('my');
-    Route::view('/search', 'placeholder', ['title' => 'Search'])->name('search');
+    Route::get('/my', \App\Livewire\My\Jobs::class)->name('my');
+    Route::get('/search', SearchController::class)->name('search');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/users', [SettingsController::class, 'storeUser'])->name('settings.users.store');
+    Route::put('/settings/users/{user}', [SettingsController::class, 'updateUser'])->name('settings.users.update');
     Route::get('/customers', \App\Livewire\Customers\Index::class)->name('customers.index');
     Route::get('/customers/new', [CustomerController::class, 'create'])->name('customers.create');
     Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
@@ -77,9 +83,4 @@ Route::middleware('auth')->group(function () {
     Route::post('/complaints/{complaint}/assign', [ComplaintController::class, 'assign'])->name('complaints.assign');
     Route::post('/complaints/{complaint}/status', [ComplaintController::class, 'status'])->name('complaints.status');
 
-    foreach (['settings'] as $m) {
-        Route::view("/$m", 'placeholder', ['title' => ucfirst($m)])->name("$m.index");
-        Route::view("/$m/new", 'placeholder', ['title' => 'New '.$m])->name("$m.create");
-        Route::get("/$m/{id}", fn () => view('placeholder', ['title' => ucfirst($m)]))->name("$m.show");
-    }
 });
