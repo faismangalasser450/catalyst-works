@@ -19,7 +19,7 @@
         <nav class="space-y-5 px-3 py-2">
             @php($nav = [
                 null => [['dashboard', 'Dashboard', ['admin','sales','service','accounts']], ['my', 'My jobs', ['technician','service','admin']]],
-                'Sales' => [['customers.index', 'Customers', ['admin','sales','service','accounts']], ['enquiries.index', 'Enquiries', ['admin','sales']], ['quotations.index', 'Quotations', ['admin','sales','accounts']], ['orders.index', 'Orders', ['admin','sales','service','accounts']], ['invoices.index', 'Invoices', ['admin','sales','accounts']]],
+                'Sales' => [['customers.index', 'Customers', ['admin','sales','service','accounts']], ['enquiries.index', 'Enquiries', ['admin','sales']], ['quotations.index', 'Quotations', ['admin','sales','accounts']], ['orders.index', 'Orders', ['admin','sales','accounts']], ['invoices.index', 'Invoices', ['admin','sales','accounts']]],
                 'Service' => [['complaints.index', 'Complaints', ['admin','sales','service','technician']], ['contracts.index', 'AMC contracts', ['admin','sales','service','accounts']], ['ppm.index', 'PPM visits', ['admin','service','technician']]],
                 'Admin' => [['settings.index', 'Settings', ['admin']]],
             ])
@@ -70,6 +70,7 @@
 
         <main class="flex-1 p-4 lg:p-6">
             @if(session('ok'))<div class="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-2.5 text-[13px] text-green-800">{{ session('ok') }}</div>@endif
+            @if(session('err'))<div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] text-red-800">{{ session('err') }}</div>@endif
             @if($errors->any())<div class="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-[13px] text-red-800">{{ $errors->first() }}</div>@endif
             {{ $slot }}
         </main>

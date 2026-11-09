@@ -26,11 +26,18 @@ class RoleTest extends TestCase
         $this->actingAs($tech)->get('/invoices')->assertForbidden();
         $this->actingAs($tech)->post(route('complaints.status', $c), ['status' => 'closed'])->assertForbidden();
 
+        $this->actingAs($tech)->get('/dashboard')->assertRedirect(route('my'));
         $this->actingAs($accounts)->get('/dashboard')->assertOk()->assertDontSee(route('complaints.assign', $c));
         $this->actingAs($accounts)->get('/invoices')->assertOk();
         $this->actingAs($accounts)->get('/complaints')->assertForbidden();
         $this->actingAs($accounts)->get('/settings')->assertForbidden();
 
+        $this->actingAs($accounts)->get('/search?q=CMP-')->assertDontSee('CMP-0');
+        $draft = \App\Models\Quotation::where('status', 'sent')->first();
+        \Livewire\Livewire::actingAs($accounts)->test(\App\Livewire\Quotations\Index::class)->call('approve', $draft->id)->assertForbidden();
+        \Livewire\Livewire::actingAs($tech)->test(\App\Livewire\Complaints\Index::class)->call('assign', $c->id, (string) $tech->id)->assertForbidden();
+        \Livewire\Livewire::actingAs($service)->test(\App\Livewire\Complaints\Index::class)->call('setStatus', $c->id, 'closed')->assertStatus(422);
+        $this->assertSame('sent', $draft->fresh()->status);
         $this->actingAs($service)->get('/complaints')->assertOk();
         $this->actingAs($service)->get('/invoices')->assertForbidden();
         $this->actingAs($service)->post(route('complaints.status', $c), ['status' => 'in_progress'])->assertRedirect();

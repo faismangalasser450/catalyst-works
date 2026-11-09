@@ -25,16 +25,19 @@ class Index extends Component
 
     public function markSent(int $id): void
     {
+        \App\Http\Middleware\EnsureRole::write('quotations');
         app(QuotationActions::class)->markSent(Quotation::findOrFail($id));
     }
 
     public function approve(int $id): void
     {
+        \App\Http\Middleware\EnsureRole::write('quotations');
         app(QuotationActions::class)->approve(Quotation::findOrFail($id));
     }
 
     public function reject(): void
     {
+        \App\Http\Middleware\EnsureRole::write('quotations');
         $this->validate(['reason' => 'required|string|max:200']);
         app(QuotationActions::class)->reject(Quotation::findOrFail($this->rejecting), $this->reason);
         $this->reset('rejecting', 'reason');

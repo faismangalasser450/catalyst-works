@@ -22,6 +22,7 @@ class Index extends Component
 
     public function setStatus(int $id, string $status): void
     {
+        \App\Http\Middleware\EnsureRole::write('orders');
         abort_unless(array_key_exists($status, Order::STATUSES), 422);
         $o = Order::findOrFail($id);
         $o->update(['status' => $status, 'delivered_on' => $status === 'delivered' ? ($o->delivered_on ?? today()) : $o->delivered_on]);
@@ -30,6 +31,7 @@ class Index extends Component
 
     public function assign(int $id, string $techId): void
     {
+        \App\Http\Middleware\EnsureRole::write('orders');
         $o = Order::findOrFail($id);
         $o->update(['technician_id' => $techId ?: null]);
         $o->log('assigned', $techId ? User::find($techId)->name : 'Unassigned');

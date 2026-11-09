@@ -23,6 +23,7 @@ class Index extends Component
 
     public function markLost(int $id): void
     {
+        \App\Http\Middleware\EnsureRole::write('enquiries');
         $e = Enquiry::findOrFail($id);
         $e->update(['status' => 'lost']);
         $e->log('status', 'Lost');

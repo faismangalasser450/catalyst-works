@@ -28,7 +28,9 @@ class QuotationController extends Controller
 
     public function approve(Quotation $quotation)
     {
-        $this->actions->approve($quotation);
+        if (! $this->actions->approve($quotation)) {
+            return back()->with('err', $quotation->ref.' is already '.$quotation->status.' and cannot be approved.');
+        }
 
         return back()->with('ok', $quotation->ref.' approved. Next: create the order.');
     }

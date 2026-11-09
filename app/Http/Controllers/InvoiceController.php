@@ -28,7 +28,9 @@ class InvoiceController extends Controller
 
     public function cancel(Invoice $invoice)
     {
-        abort_if($invoice->paid_amount > 0, 422, 'Cannot cancel an invoice with payments.');
+        if ($invoice->paid_amount > 0) {
+            return back()->with('err', $invoice->code.' already has payments recorded, so it cannot be cancelled.');
+        }
         $invoice->update(['status' => 'cancelled']);
         $invoice->log('status', 'Cancelled');
 

@@ -28,7 +28,7 @@
                     <td><div>{{ $c->type }}</div><div class="max-w-xs truncate text-xs text-slate-500">{{ $c->equipment }} · {{ $c->description }}</div></td>
                     <td class="whitespace-nowrap"><div>{{ dmy($c->reported_at) }}</div><div class="text-xs {{ $c->isOverdue() ? 'font-medium text-red-600' : 'text-slate-500' }}">{{ ago($c->reported_at) }} ago</div></td>
                     <td><select wire:change="assign({{ $c->id }}, $event.target.value)" class="input w-40 py-1 text-xs"><option value="">Unassigned</option>@foreach($technicians as $t)<option value="{{ $t->id }}" @selected($c->technician_id === $t->id)>{{ $t->name }}</option>@endforeach</select></td>
-                    <td><select wire:change="setStatus({{ $c->id }}, $event.target.value)" class="input w-32 py-1 text-xs {{ badge($c->status) }}">@foreach(\App\Models\Complaint::STATUSES as $k => $l)<option value="{{ $k }}" @selected($c->status === $k)>{{ $l }}</option>@endforeach</select></td>
+                    <td><select wire:change="setStatus({{ $c->id }}, $event.target.value)" class="input w-32 py-1 text-xs {{ badge($c->status) }}">@foreach(\App\Models\Complaint::STATUSES as $k => $l)@if($k === 'closed' && $c->status !== 'closed')@continue @endif<option value="{{ $k }}" @selected($c->status === $k)>{{ $l }}</option>@endforeach</select></td>
                     <td><a href="{{ route('complaints.show', $c) }}" class="btn btn-sm">Open</a></td>
                 </tr>
             @empty

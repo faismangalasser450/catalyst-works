@@ -47,7 +47,7 @@
                         @if($u->hasRole('sales','service'))
                         <form method="post" action="{{ route('complaints.status', $c) }}">@csrf
                             <select name="status" class="input py-1 text-xs" onchange="this.form.submit()">
-                                @foreach(\App\Models\Complaint::STATUSES as $k => $l)<option value="{{ $k }}" @selected($c->status === $k)>{{ $l }}</option>@endforeach
+                                @foreach(\App\Models\Complaint::STATUSES as $k => $l)@if($k === 'closed')@continue @endif<option value="{{ $k }}" @selected($c->status === $k)>{{ $l }}</option>@endforeach
                             </select>
                         </form>
                         @else <x-badge :status="$c->status" /> @endif

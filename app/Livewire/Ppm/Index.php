@@ -22,11 +22,13 @@ class Index extends Component
 
     public function assign(int $id, string $techId): void
     {
+        \App\Http\Middleware\EnsureRole::write('ppm');
         PpmVisit::findOrFail($id)->update(['technician_id' => $techId ?: null]);
     }
 
     public function done(int $id): void
     {
+        \App\Http\Middleware\EnsureRole::write('ppm');
         $v = PpmVisit::findOrFail($id);
         $v->update(['status' => 'done', 'done_on' => today(), 'technician_id' => $v->technician_id ?? (auth()->user()->isTechnician() ? auth()->id() : null)]);
         $v->contract->log('ppm', 'Visit planned '.dmy($v->scheduled_on).' done');
@@ -34,6 +36,7 @@ class Index extends Component
 
     public function undo(int $id): void
     {
+        \App\Http\Middleware\EnsureRole::write('ppm');
         PpmVisit::findOrFail($id)->update(['status' => 'due', 'done_on' => null]);
     }
 

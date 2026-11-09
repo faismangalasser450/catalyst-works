@@ -19,14 +19,16 @@ class QuotationActions
         $q->log('status', 'Sent to customer');
     }
 
-    public function approve(Quotation $q): void
+    public function approve(Quotation $q): bool
     {
         if (! $q->isOpen()) {
-            return;
+            return false;
         }
         $q->update(['status' => 'approved', 'decided_at' => now(), 'sent_at' => $q->sent_at ?? now()]);
         $q->log('status', 'Approved by customer');
         $q->enquiry?->update(['status' => 'won']);
+
+        return true;
     }
 
     public function reject(Quotation $q, string $reason): void

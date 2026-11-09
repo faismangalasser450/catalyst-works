@@ -24,6 +24,7 @@ class Index extends Component
 
     public function assign(int $id, string $techId): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $c = Complaint::findOrFail($id);
         $c->update(['technician_id' => $techId ?: null, 'status' => $techId && $c->status === 'open' ? 'assigned' : $c->status]);
         $c->log('assigned', $techId ? User::find($techId)->name : 'Unassigned');
@@ -31,7 +32,8 @@ class Index extends Component
 
     public function setStatus(int $id, string $status): void
     {
-        abort_unless(array_key_exists($status, Complaint::STATUSES), 422);
+        \App\Http\Middleware\EnsureRole::write('complaints');
+        abort_unless(array_key_exists($status, Complaint::STATUSES) && $status !== 'closed', 422, 'Close from the complaint page so a closing note is recorded.');
         Complaint::findOrFail($id)->setStatus($status);
     }
 

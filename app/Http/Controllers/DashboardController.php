@@ -15,6 +15,9 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
+        if ($request->user()->isTechnician()) {
+            return redirect()->route('my');
+        }
         $u = $request->user();
         $now = now();
         $monthStart = $now->copy()->startOfMonth();

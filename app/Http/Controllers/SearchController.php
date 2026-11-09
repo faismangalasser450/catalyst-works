@@ -25,6 +25,8 @@ class SearchController extends Controller
             'Invoices' => Invoice::where('code', 'like', $like)->orWhere('lpo_number', 'like', $like)->orWhereHas('customer', fn ($c) => $c->where('name', 'like', $like))->with('customer')->latest('date')->limit(10)->get()->map(fn ($x) => [route('invoices.show', $x), $x->code.' · '.$x->customer->name, money($x->total, true).' · '.status_label($x->status)]),
             'AMC contracts' => AmcContract::where('code', 'like', $like)->orWhere('site_name', 'like', $like)->orWhereHas('customer', fn ($c) => $c->where('name', 'like', $like))->with('customer')->limit(10)->get()->map(fn ($x) => [route('contracts.show', $x), $x->code.' · '.$x->customer->name, $x->site_name.' · '.status_label($x->status)]),
         ];
+        $areas = ['Customers' => 'customers', 'Complaints' => 'complaints', 'Quotations' => 'quotations', 'Invoices' => 'invoices', 'AMC contracts' => 'contracts'];
+        $results = array_filter($results, fn ($k) => \App\Http\Middleware\EnsureRole::allows($request->user(), $areas[$k]), ARRAY_FILTER_USE_KEY);
         $all = collect($results)->flatten(1);
         if ($all->count() === 1) {
             return redirect($all->first()[0]);

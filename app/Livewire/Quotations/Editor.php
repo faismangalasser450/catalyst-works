@@ -101,6 +101,7 @@ class Editor extends Component
 
     public function save(string $then = 'view')
     {
+        \App\Http\Middleware\EnsureRole::write('quotations');
         $this->validate([
             'customer_id' => 'required|exists:customers,id', 'date' => 'required|date', 'valid_days' => 'required|integer|min:1|max:120',
             'subject' => 'required|string|max:200', 'discount_pct' => 'numeric|min:0|max:100', 'vat_pct' => 'numeric|min:0|max:100',
