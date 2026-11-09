@@ -31,6 +31,9 @@ class Editor extends Component
 
     public function mount(?Quotation $quotation = null, ?int $enquiry = null, ?int $customer = null, ?string $kind = null): void
     {
+        $enquiry ??= request()->integer('enquiry') ?: null;
+        $customer ??= request()->integer('customer') ?: null;
+        $kind ??= request('kind');
         $this->date = today()->format('Y-m-d');
         $this->valid_days = (int) Setting::get('quote_valid_days', 15);
         $this->vat_pct = (string) Setting::get('vat_pct', 5);
