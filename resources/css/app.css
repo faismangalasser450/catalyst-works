@@ -40,7 +40,7 @@
     .chip-on { @apply border-brand-700 bg-brand-700 text-white hover:bg-brand-700; }
     .navlink { @apply flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-slate-200 hover:bg-white/10; }
     .navlink-on { @apply bg-white/15 text-white font-medium; }
-    .kpi { @apply card p-4; }
+    .kpi { @apply rounded-lg border border-slate-200 bg-white shadow-xs p-4; }
     .kpi .v { @apply mt-1 text-2xl font-semibold text-slate-900; }
     .kpi .l { @apply text-[13px] text-slate-500; }
     .kpi .s { @apply mt-1 text-xs text-slate-500; }
