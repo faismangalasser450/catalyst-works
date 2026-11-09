@@ -26,6 +26,7 @@ class RoleTest extends TestCase
         $this->actingAs($tech)->get('/invoices')->assertForbidden();
         $this->actingAs($tech)->post(route('complaints.status', $c), ['status' => 'closed'])->assertForbidden();
 
+        $this->actingAs($accounts)->get('/dashboard')->assertOk()->assertDontSee(route('complaints.assign', $c));
         $this->actingAs($accounts)->get('/invoices')->assertOk();
         $this->actingAs($accounts)->get('/complaints')->assertForbidden();
         $this->actingAs($accounts)->get('/settings')->assertForbidden();

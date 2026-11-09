@@ -34,19 +34,23 @@
                     <td>{{ $c->type }}<div class="text-xs text-slate-500">{{ $c->equipment }}</div></td>
                     <td class="{{ $c->isOverdue() ? 'font-medium text-red-600' : '' }}">{{ ago($c->reported_at) }}</td>
                     <td>
+                        @if($u->hasRole('sales','service'))
                         <form method="post" action="{{ route('complaints.assign', $c) }}">@csrf
                             <select name="technician_id" class="input py-1 text-xs" onchange="this.form.submit()">
                                 <option value="">Unassigned</option>
                                 @foreach($technicians as $t)<option value="{{ $t->id }}" @selected($c->technician_id === $t->id)>{{ $t->name }}</option>@endforeach
                             </select>
                         </form>
+                        @else {{ $c->technician?->name ?? '—' }} @endif
                     </td>
                     <td>
+                        @if($u->hasRole('sales','service'))
                         <form method="post" action="{{ route('complaints.status', $c) }}">@csrf
                             <select name="status" class="input py-1 text-xs" onchange="this.form.submit()">
                                 @foreach(\App\Models\Complaint::STATUSES as $k => $l)<option value="{{ $k }}" @selected($c->status === $k)>{{ $l }}</option>@endforeach
                             </select>
                         </form>
+                        @else <x-badge :status="$c->status" /> @endif
                     </td>
                 </tr>
             @empty
