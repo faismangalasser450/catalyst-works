@@ -29,7 +29,7 @@
     </tr></table>
     <table class="items" style="margin-top:10px">
         <thead><tr><th style="width:5%" class="c">Sl</th><th>Description</th><th style="width:7%" class="c">Qty</th><th style="width:13%" class="r">Unit price</th><th style="width:12%" class="r">VAT {{ $i->vat_pct + 0 }}%</th><th style="width:15%" class="r">Amount (AED)</th></tr></thead>
-        <tbody>@foreach($i->items as $it)<tr><td class="c">{{ $loop->iteration }}</td><td>{{ $it->description }}</td><td class="c">{{ $it->qty + 0 }}</td><td class="r">{{ money($it->unit_price) }}</td><td class="r">{{ money($it->total * $i->vat_pct / 100) }}</td><td class="r">{{ money($it->total) }}</td></tr>@endforeach</tbody>
+        <tbody>@foreach($i->items as $it)<tr><td class="c">{{ $loop->iteration }}</td><td>{{ $it->description }}</td><td class="c">{{ $it->qty + 0 }}</td><td class="r">{{ money($it->unit_price) }}</td><td class="r">{{ money($it->total * (1 - ($i->subtotal > 0 ? $i->discount_amt / $i->subtotal : 0)) * $i->vat_pct / 100) }}</td><td class="r">{{ money($it->total) }}</td></tr>@endforeach</tbody>
     </table>
     <table class="tot" style="margin-top:4px"><tr><td style="width:58%; vertical-align:top"><span class="muted">Amount in words:</span> <span class="b">UAE Dirhams {{ $words }}@if($fils) and {{ $fils }}/100 @endif only</span></td>
         <td><table class="tot">

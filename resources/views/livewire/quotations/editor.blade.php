@@ -1,3 +1,4 @@
+@if($errors->any())<div class="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{{ $errors->first() }}</div>@endif
 <div>
     <form wire:submit="save">
     <x-page :title="$quotation ? 'Edit '.$quotation->ref : 'New quotation'" sub="Customer, subject, lines. Terms and bank details are filled from Settings." :back="$quotation ? route('quotations.show', $quotation) : route('quotations.index')">
@@ -37,8 +38,8 @@
                             <td><input wire:model="items.{{ $i }}.brand" class="input py-1.5" placeholder="O General"></td>
                             <td><input wire:model="items.{{ $i }}.description" class="input py-1.5" placeholder="Ducted split unit, supply & install">@error("items.$i.description")<div class="text-xs text-red-600">Required</div>@enderror</td>
                             <td><input wire:model="items.{{ $i }}.capacity" class="input py-1.5" placeholder="3.0 TR"></td>
-                            <td><input type="number" step="any" min="0" wire:model.live="items.{{ $i }}.qty" class="input py-1.5 text-right"></td>
-                            <td><input type="number" step="0.01" min="0" wire:model.live="items.{{ $i }}.unit_price" class="input py-1.5 text-right"></td>
+                            <td><input type="number" step="any" min="0.01" wire:model.live="items.{{ $i }}.qty" class="input py-1.5 text-right @error("items.$i.qty") border-red-500 @enderror">@error("items.$i.qty")<div class="text-xs text-red-600">Qty &gt; 0</div>@enderror</td>
+                            <td><input type="number" step="0.01" min="0" wire:model.live="items.{{ $i }}.unit_price" class="input py-1.5 text-right @error("items.$i.unit_price") border-red-500 @enderror"></td>
                             <td class="text-right font-medium">{{ money((float) $it['qty'] * (float) $it['unit_price']) }}</td>
                             <td><button type="button" wire:click="removeItem({{ $i }})" class="text-slate-400 hover:text-red-600" title="Remove line">✕</button></td>
                         </tr>

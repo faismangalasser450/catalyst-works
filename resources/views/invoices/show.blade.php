@@ -19,7 +19,7 @@
                 <div class="card-h">Record a payment</div>
                 <div class="card-b grid gap-3 sm:grid-cols-5">
                     <x-field label="Date" name="date" required><input type="date" name="date" class="input" value="{{ today()->format('Y-m-d') }}"></x-field>
-                    <x-field label="Amount (AED)" name="amount" required><input type="number" step="0.01" name="amount" class="input" value="{{ $i->balance }}"></x-field>
+                    <x-field label="Amount (AED)" name="amount" required><input type="number" step="0.01" min="0.01" max="{{ $i->balance }}" name="amount" class="input" value="{{ $i->balance }}"></x-field>
                     <x-field label="Method" name="method"><select name="method" class="input"><option>Bank transfer</option><option>Cheque</option><option>Cash</option><option>Card</option></select></x-field>
                     <x-field label="Reference" name="reference"><input name="reference" class="input" placeholder="Cheque / transfer no"></x-field>
                     <div class="flex items-end"><button class="btn btn-primary w-full justify-center">Save payment</button></div>

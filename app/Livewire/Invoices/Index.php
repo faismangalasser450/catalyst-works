@@ -33,8 +33,8 @@ class Index extends Component
 
     public function pay(): void
     {
-        $this->validate(['amount' => 'required|numeric|min:0.01', 'method' => 'required|string|max:40', 'reference' => 'nullable|string|max:60']);
         $inv = Invoice::findOrFail($this->paying);
+        $this->validate(['amount' => 'required|numeric|min:0.01|max:'.$inv->balance, 'method' => 'required|string|max:40', 'reference' => 'nullable|string|max:60']);
         $inv->payments()->create(['date' => today(), 'amount' => $this->amount, 'method' => $this->method, 'reference' => $this->reference ?: null, 'user_id' => auth()->id()]);
         $inv->refreshPaidStatus();
         $inv->log('payment', money($this->amount, true).' '.$this->method.($this->reference ? ' '.$this->reference : ''));

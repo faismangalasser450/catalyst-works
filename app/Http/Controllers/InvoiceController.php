@@ -18,7 +18,7 @@ class InvoiceController extends Controller
 
     public function pay(Request $request, Invoice $invoice)
     {
-        $data = $request->validate(['date' => 'required|date', 'amount' => 'required|numeric|min:0.01', 'method' => 'required|string|max:40', 'reference' => 'nullable|string|max:60']);
+        $data = $request->validate(['date' => 'required|date', 'amount' => 'required|numeric|min:0.01|max:'.$invoice->balance, 'method' => 'required|string|max:40', 'reference' => 'nullable|string|max:60']);
         $invoice->payments()->create($data + ['user_id' => $request->user()->id]);
         $invoice->refreshPaidStatus();
         $invoice->log('payment', money($data['amount'], true).' '.$data['method'].(! empty($data['reference']) ? ' '.$data['reference'] : ''));
