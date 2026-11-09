@@ -32,12 +32,14 @@ class Show extends Component
 
     public function assign(string $techId): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $this->complaint->update(['technician_id' => $techId ?: null, 'status' => $techId && $this->complaint->status === 'open' ? 'assigned' : $this->complaint->status]);
         $this->complaint->log('assigned', $techId ? User::find($techId)->name : 'Unassigned');
     }
 
     public function setStatus(string $status): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         abort_unless(array_key_exists($status, Complaint::STATUSES), 422);
         if ($status === 'closed') {
             $this->open('close');
@@ -49,6 +51,7 @@ class Show extends Component
 
     public function logVisit(): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $data = $this->validate(['visited_at' => 'required|date', 'hours' => 'required|numeric|min:0.25|max:24', 'notes' => 'required|string|max:1000']);
         $this->complaint->visits()->create($data + ['technician_id' => $this->complaint->technician_id ?? auth()->id()]);
         if (in_array($this->complaint->status, ['open', 'assigned'])) {
@@ -61,6 +64,7 @@ class Show extends Component
 
     public function addMaterial(): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $data = $this->validate(['material' => 'required|string|max:200', 'qty' => 'required|numeric|min:0.01', 'unit_cost' => 'required|numeric|min:0']);
         $this->complaint->materials()->create(['description' => $data['material'], 'qty' => $data['qty'], 'unit_cost' => $data['unit_cost']]);
         $this->complaint->log('material', $data['material'].' × '.$data['qty']);
@@ -70,11 +74,13 @@ class Show extends Component
 
     public function removeMaterial(int $id): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $this->complaint->materials()->whereKey($id)->delete();
     }
 
     public function close(): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $this->validate(['closing_note' => 'required|string|max:1000']);
         $this->complaint->setStatus('closed', $this->closing_note);
         $this->reset('panel');
@@ -82,6 +88,7 @@ class Show extends Component
 
     public function reopen(): void
     {
+        \App\Http\Middleware\EnsureRole::write('complaints');
         $this->complaint->update(['status' => $this->complaint->technician_id ? 'assigned' : 'open', 'closed_at' => null]);
         $this->complaint->log('status', 'Reopened');
     }

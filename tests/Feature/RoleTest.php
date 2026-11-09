@@ -38,6 +38,7 @@ class RoleTest extends TestCase
         \Livewire\Livewire::actingAs($tech)->test(\App\Livewire\Complaints\Index::class)->call('assign', $c->id, (string) $tech->id)->assertForbidden();
         \Livewire\Livewire::actingAs($service)->test(\App\Livewire\Complaints\Index::class)->call('setStatus', $c->id, 'closed')->assertStatus(422);
         $this->assertSame('sent', $draft->fresh()->status);
+        \Livewire\Livewire::actingAs($tech)->test(\App\Livewire\Complaints\Show::class, ['complaint' => $c])->call('assign', (string) $tech->id)->assertForbidden();
         $this->actingAs($service)->get('/complaints')->assertOk();
         $this->actingAs($service)->get('/invoices')->assertForbidden();
         $this->actingAs($service)->post(route('complaints.status', $c), ['status' => 'in_progress'])->assertRedirect();

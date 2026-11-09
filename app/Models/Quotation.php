@@ -23,7 +23,7 @@ class Quotation extends Model
     public static function nextCode(string $kind = 'sales'): string
     {
         $prefix = $kind === 'amc' ? 'CAC/AMC/' : 'CAC/QTN/';
-        $last = static::query()->where('code', 'like', $prefix.'%')->orderByDesc('id')->value('code');
+        $last = static::query()->where('code', 'like', $prefix.'%')->orderByDesc('code')->value('code');
         $n = $last ? ((int) substr($last, strlen($prefix))) + 1 : 1;
 
         return $prefix.str_pad((string) $n, 4, '0', STR_PAD_LEFT);

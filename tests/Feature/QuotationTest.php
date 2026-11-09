@@ -74,4 +74,13 @@ class QuotationTest extends TestCase
         $this->assertSame($q->revision + 1, $new->revision);
         $this->assertCount($q->items()->count(), $new->items);
     }
+
+    public function test_next_code_skips_revisions_of_older_quotations(): void
+    {
+        $old = \App\Models\Quotation::where('kind', 'sales')->orderBy('id')->first();
+        $old->update(['status' => 'sent']);
+        app(\App\Services\QuotationActions::class)->revise($old);
+        $code = \App\Models\Quotation::nextCode('sales');
+        $this->assertDatabaseMissing('quotations', ['code' => $code]);
+    }
 }

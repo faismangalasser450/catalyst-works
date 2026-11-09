@@ -1,5 +1,5 @@
 <div>
-    <form wire:submit="save">
+    <form wire:submit="save" novalidate>
     @if($errors->any())<div class="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{{ $errors->first() }}</div>@endif
     <x-page :title="$quotation ? 'Edit '.$quotation->ref : 'New quotation'" sub="Customer, subject, lines. Terms and bank details are filled from Settings." :back="$quotation ? route('quotations.show', $quotation) : route('quotations.index')">
         <x-slot:actions>
