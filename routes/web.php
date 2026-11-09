@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EnquiryController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/enquiries/{enquiry}/edit', [EnquiryController::class, 'edit'])->name('enquiries.edit');
     Route::put('/enquiries/{enquiry}', [EnquiryController::class, 'update'])->name('enquiries.update');
 
+    Route::get('/quotations', \App\Livewire\Quotations\Index::class)->name('quotations.index');
+    Route::get('/quotations/new', \App\Livewire\Quotations\Editor::class)->name('quotations.create');
+    Route::get('/quotations/{quotation}', [QuotationController::class, 'show'])->name('quotations.show');
+    Route::get('/quotations/{quotation}/edit', \App\Livewire\Quotations\Editor::class)->name('quotations.edit');
+    Route::get('/quotations/{quotation}/pdf', [QuotationController::class, 'pdf'])->name('quotations.pdf');
+    Route::post('/quotations/{quotation}/sent', [QuotationController::class, 'sent'])->name('quotations.sent');
+    Route::post('/quotations/{quotation}/approve', [QuotationController::class, 'approve'])->name('quotations.approve');
+    Route::post('/quotations/{quotation}/reject', [QuotationController::class, 'reject'])->name('quotations.reject');
+    Route::get('/quotations/{quotation}/revise', [QuotationController::class, 'revise'])->name('quotations.revise');
+    Route::get('/quotations/{quotation}/order', [QuotationController::class, 'order'])->name('quotations.order');
+    Route::get('/quotations/{quotation}/invoice', [QuotationController::class, 'invoice'])->name('quotations.invoice');
+
     Route::get('/complaints', \App\Livewire\Complaints\Index::class)->name('complaints.index');
     Route::get('/complaints/new', [ComplaintController::class, 'create'])->name('complaints.create');
     Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
@@ -41,7 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/complaints/{complaint}/assign', [ComplaintController::class, 'assign'])->name('complaints.assign');
     Route::post('/complaints/{complaint}/status', [ComplaintController::class, 'status'])->name('complaints.status');
 
-    foreach (['quotations', 'orders', 'invoices', 'contracts', 'ppm', 'settings'] as $m) {
+    foreach (['orders', 'invoices', 'contracts', 'ppm', 'settings'] as $m) {
         Route::view("/$m", 'placeholder', ['title' => ucfirst($m)])->name("$m.index");
         Route::view("/$m/new", 'placeholder', ['title' => 'New '.$m])->name("$m.create");
         Route::get("/$m/{id}", fn () => view('placeholder', ['title' => ucfirst($m)]))->name("$m.show");
