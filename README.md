@@ -45,3 +45,18 @@ php artisan test
 1. Point `.env` at MySQL and run `php artisan migrate`.
 2. Write a one-off import from the old `Catalyst_erp` tables (customers, quotations, AMC agreements, complaints) into these tables.
 3. Replace `public/brand/header.jpg` / `footer.jpg` if the letterhead changes.
+
+## Hosting the test site
+
+The repo ships a `Dockerfile` (Apache + PHP 8.3, Postgres and MySQL drivers) that runs
+`php artisan migrate --force --seed` on start; the seeder is a no-op once data exists.
+The test site runs on Render (free web service, Docker, region Singapore) with a Supabase
+Postgres database. Environment variables it needs:
+
+```
+APP_ENV=production  APP_DEBUG=false  APP_KEY=<php artisan key:generate --show>  APP_URL=https://<host>
+DB_CONNECTION=pgsql  DB_URL=postgresql://...  DB_SSLMODE=require
+SESSION_DRIVER=database  CACHE_STORE=database  QUEUE_CONNECTION=sync  MAIL_MAILER=log  LOG_CHANNEL=stderr
+```
+
+Free-tier note: the service sleeps after 15 minutes without traffic; the first request afterwards takes 30–60 s.
