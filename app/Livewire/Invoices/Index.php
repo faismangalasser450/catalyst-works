@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Invoices;
 
+use App\Http\Middleware\EnsureRole;
 use App\Models\Invoice;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -11,11 +12,18 @@ class Index extends Component
 {
     use WithPagination;
 
-    #[Url] public string $q = '';
-    #[Url] public string $status = '';
+    #[Url]
+    public string $q = '';
+
+    #[Url]
+    public string $status = '';
+
     public ?int $paying = null;
+
     public string $amount = '';
+
     public string $method = 'Bank transfer';
+
     public string $reference = '';
 
     public function updated(): void
@@ -25,7 +33,7 @@ class Index extends Component
 
     public function startPay(int $id): void
     {
-        \App\Http\Middleware\EnsureRole::write('invoices');
+        EnsureRole::write('invoices');
         $inv = Invoice::findOrFail($id);
         $this->paying = $id;
         $this->amount = (string) $inv->balance;
@@ -34,7 +42,7 @@ class Index extends Component
 
     public function pay(): void
     {
-        \App\Http\Middleware\EnsureRole::write('invoices');
+        EnsureRole::write('invoices');
         $inv = Invoice::findOrFail($this->paying);
         $this->validate(['amount' => 'required|numeric|min:0.01|max:'.$inv->balance, 'method' => 'required|string|max:40', 'reference' => 'nullable|string|max:60']);
         $inv->payments()->create(['date' => today(), 'amount' => $this->amount, 'method' => $this->method, 'reference' => $this->reference ?: null, 'user_id' => auth()->id()]);
@@ -45,7 +53,7 @@ class Index extends Component
 
     public function render()
     {
-        $base = Invoice::query()->when($this->q, fn ($q) => $q->where(fn ($w) => $w->where('code', 'like', "%{$this->q}%")->orWhere('lpo_number', 'like', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$this->q}%"))));
+        $base = Invoice::query()->when($this->q, fn ($q) => $q->where(fn ($w) => $w->whereLike('code', "%{$this->q}%")->orWhereLike('lpo_number', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->whereLike('name', "%{$this->q}%"))));
         $counts = (clone $base)->selectRaw('status, count(*) c, sum(total - paid_amount) due')->groupBy('status')->get()->keyBy('status');
         $invoices = (clone $base)->when($this->status === '' || $this->status === 'unpaid', fn ($q) => $q->whereIn('status', ['unpaid', 'part_paid']))
             ->when($this->status === 'overdue', fn ($q) => $q->whereIn('status', ['unpaid', 'part_paid'])->where('due_date', '<', today()))

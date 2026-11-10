@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Orders;
 
+use App\Http\Middleware\EnsureRole;
 use App\Models\Order;
 use App\Models\User;
 use Livewire\Attributes\Url;
@@ -12,8 +13,11 @@ class Index extends Component
 {
     use WithPagination;
 
-    #[Url] public string $q = '';
-    #[Url] public string $status = '';
+    #[Url]
+    public string $q = '';
+
+    #[Url]
+    public string $status = '';
 
     public function updated(): void
     {
@@ -22,7 +26,7 @@ class Index extends Component
 
     public function setStatus(int $id, string $status): void
     {
-        \App\Http\Middleware\EnsureRole::write('orders');
+        EnsureRole::write('orders');
         abort_unless(array_key_exists($status, Order::STATUSES), 422);
         $o = Order::findOrFail($id);
         $o->update(['status' => $status, 'delivered_on' => $status === 'delivered' ? ($o->delivered_on ?? today()) : $o->delivered_on]);
@@ -31,7 +35,7 @@ class Index extends Component
 
     public function assign(int $id, string $techId): void
     {
-        \App\Http\Middleware\EnsureRole::write('orders');
+        EnsureRole::write('orders');
         $o = Order::findOrFail($id);
         $o->update(['technician_id' => $techId ?: null]);
         $o->log('assigned', $techId ? User::find($techId)->name : 'Unassigned');
@@ -39,7 +43,7 @@ class Index extends Component
 
     public function render()
     {
-        $base = Order::query()->when($this->q, fn ($q) => $q->where(fn ($w) => $w->where('code', 'like', "%{$this->q}%")->orWhere('po_number', 'like', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$this->q}%"))));
+        $base = Order::query()->when($this->q, fn ($q) => $q->where(fn ($w) => $w->whereLike('code', "%{$this->q}%")->orWhereLike('po_number', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->whereLike('name', "%{$this->q}%"))));
         $counts = (clone $base)->selectRaw('status, count(*) c')->groupBy('status')->pluck('c', 'status');
         $orders = (clone $base)->when($this->status === '', fn ($q) => $q->whereIn('status', ['confirmed', 'in_progress']))
             ->when($this->status && $this->status !== 'all', fn ($q) => $q->where('status', $this->status))

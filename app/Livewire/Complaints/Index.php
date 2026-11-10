@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Complaints;
 
+use App\Http\Middleware\EnsureRole;
 use App\Models\Complaint;
 use App\Models\User;
 use Livewire\Attributes\Url;
@@ -12,10 +13,17 @@ class Index extends Component
 {
     use WithPagination;
 
-    #[Url] public string $q = '';
-    #[Url] public string $status = '';
-    #[Url] public string $tech = '';
-    #[Url] public string $period = '';
+    #[Url]
+    public string $q = '';
+
+    #[Url]
+    public string $status = '';
+
+    #[Url]
+    public string $tech = '';
+
+    #[Url]
+    public string $period = '';
 
     public function updated($name): void
     {
@@ -24,7 +32,7 @@ class Index extends Component
 
     public function assign(int $id, string $techId): void
     {
-        \App\Http\Middleware\EnsureRole::write('complaints');
+        EnsureRole::write('complaints');
         $c = Complaint::findOrFail($id);
         $c->update(['technician_id' => $techId ?: null, 'status' => $techId && $c->status === 'open' ? 'assigned' : $c->status]);
         $c->log('assigned', $techId ? User::find($techId)->name : 'Unassigned');
@@ -32,7 +40,7 @@ class Index extends Component
 
     public function setStatus(int $id, string $status): void
     {
-        \App\Http\Middleware\EnsureRole::write('complaints');
+        EnsureRole::write('complaints');
         abort_unless(array_key_exists($status, Complaint::STATUSES) && $status !== 'closed', 422, 'Close from the complaint page so a closing note is recorded.');
         Complaint::findOrFail($id)->setStatus($status);
     }
@@ -40,7 +48,7 @@ class Index extends Component
     public function render()
     {
         $base = Complaint::query()
-            ->when($this->q, fn ($q) => $q->where(fn ($w) => $w->where('code', 'like', "%{$this->q}%")->orWhere('location', 'like', "%{$this->q}%")->orWhere('description', 'like', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$this->q}%"))))
+            ->when($this->q, fn ($q) => $q->where(fn ($w) => $w->whereLike('code', "%{$this->q}%")->orWhereLike('location', "%{$this->q}%")->orWhereLike('description', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->whereLike('name', "%{$this->q}%"))))
             ->when($this->tech === 'none', fn ($q) => $q->whereNull('technician_id'))
             ->when($this->tech && $this->tech !== 'none', fn ($q) => $q->where('technician_id', $this->tech))
             ->when($this->period === 'today', fn ($q) => $q->where('reported_at', '>=', today()))

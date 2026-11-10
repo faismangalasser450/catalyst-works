@@ -11,8 +11,11 @@ class Index extends Component
 {
     use WithPagination;
 
-    #[Url] public string $q = '';
-    #[Url] public string $status = 'active';
+    #[Url]
+    public string $q = '';
+
+    #[Url]
+    public string $status = 'active';
 
     public function updated(): void
     {
@@ -22,7 +25,7 @@ class Index extends Component
     public function render()
     {
         AmcContract::where('status', 'active')->where('end_date', '<', today())->update(['status' => 'expired']);
-        $base = AmcContract::query()->when($this->q, fn ($q) => $q->where(fn ($w) => $w->where('code', 'like', "%{$this->q}%")->orWhere('site_name', 'like', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$this->q}%"))));
+        $base = AmcContract::query()->when($this->q, fn ($q) => $q->where(fn ($w) => $w->whereLike('code', "%{$this->q}%")->orWhereLike('site_name', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->whereLike('name', "%{$this->q}%"))));
         $counts = (clone $base)->selectRaw('status, count(*) c')->groupBy('status')->pluck('c', 'status');
         $due = (clone $base)->where('status', 'active')->where('end_date', '<=', today()->addDays(90))->count();
         $contracts = (clone $base)

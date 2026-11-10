@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Enquiries;
 
+use App\Http\Middleware\EnsureRole;
 use App\Models\Enquiry;
 use App\Models\User;
 use Livewire\Attributes\Url;
@@ -12,9 +13,14 @@ class Index extends Component
 {
     use WithPagination;
 
-    #[Url] public string $q = '';
-    #[Url] public string $status = 'open';
-    #[Url] public string $owner = '';
+    #[Url]
+    public string $q = '';
+
+    #[Url]
+    public string $status = 'open';
+
+    #[Url]
+    public string $owner = '';
 
     public function updated(): void
     {
@@ -23,7 +29,7 @@ class Index extends Component
 
     public function markLost(int $id): void
     {
-        \App\Http\Middleware\EnsureRole::write('enquiries');
+        EnsureRole::write('enquiries');
         $e = Enquiry::findOrFail($id);
         $e->update(['status' => 'lost']);
         $e->log('status', 'Lost');
@@ -32,7 +38,7 @@ class Index extends Component
     public function render()
     {
         $base = Enquiry::query()
-            ->when($this->q, fn ($q) => $q->where(fn ($w) => $w->where('code', 'like', "%{$this->q}%")->orWhere('description', 'like', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$this->q}%"))))
+            ->when($this->q, fn ($q) => $q->where(fn ($w) => $w->whereLike('code', "%{$this->q}%")->orWhereLike('description', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->whereLike('name', "%{$this->q}%"))))
             ->when($this->owner, fn ($q) => $q->where('user_id', $this->owner));
         $counts = (clone $base)->selectRaw('status, count(*) c')->groupBy('status')->pluck('c', 'status');
         $enquiries = (clone $base)->when($this->status && $this->status !== 'all', fn ($q) => $q->where('status', $this->status))

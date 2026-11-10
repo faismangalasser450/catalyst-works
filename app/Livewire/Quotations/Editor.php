@@ -2,31 +2,49 @@
 
 namespace App\Livewire\Quotations;
 
+use App\Http\Middleware\EnsureRole;
 use App\Models\Customer;
 use App\Models\Enquiry;
 use App\Models\Product;
 use App\Models\Quotation;
 use App\Models\Setting;
+use App\Services\QuotationActions;
 use Livewire\Component;
 
 class Editor extends Component
 {
     public ?Quotation $quotation = null;
+
     public ?int $enquiry_id = null;
+
     public string $kind = 'sales';
+
     public ?int $customer_id = null;
+
     public string $date = '';
+
     public int $valid_days = 15;
+
     public string $subject = '';
+
     public string $discount_pct = '0';
+
     public string $vat_pct = '5';
+
     public array $items = [];
+
     public bool $showTerms = false;
+
     public string $payment_terms = '';
+
     public string $delivery_terms = '';
+
     public string $warranty_terms = '';
+
     public string $availability = '';
+
     public string $notes = '';
+
     public string $productSearch = '';
 
     public function mount(?Quotation $quotation = null, ?int $enquiry = null, ?int $customer = null, ?string $kind = null): void
@@ -101,7 +119,7 @@ class Editor extends Component
 
     public function save(string $then = 'view')
     {
-        \App\Http\Middleware\EnsureRole::write('quotations');
+        EnsureRole::write('quotations');
         $this->validate([
             'customer_id' => 'required|exists:customers,id', 'date' => 'required|date', 'valid_days' => 'required|integer|min:1|max:120',
             'subject' => 'required|string|max:200', 'discount_pct' => 'numeric|min:0|max:100', 'vat_pct' => 'numeric|min:0|max:100',
@@ -128,7 +146,7 @@ class Editor extends Component
         }
         $q->recalculate();
         if ($then === 'sent') {
-            app(\App\Services\QuotationActions::class)->markSent($q);
+            app(QuotationActions::class)->markSent($q);
         }
 
         return redirect()->route('quotations.show', $q)->with('ok', $q->ref.' saved'.($then === 'sent' ? ' and marked as sent.' : '.'));
@@ -138,7 +156,7 @@ class Editor extends Component
     {
         return view('livewire.quotations.editor', [
             'customers' => Customer::orderBy('name')->get(['id', 'name', 'city']),
-            'products' => strlen($this->productSearch) >= 2 ? Product::where(fn ($q) => $q->where('name', 'like', "%{$this->productSearch}%")->orWhere('brand', 'like', "%{$this->productSearch}%")->orWhere('model', 'like', "%{$this->productSearch}%"))->limit(8)->get() : collect(),
+            'products' => strlen($this->productSearch) >= 2 ? Product::where(fn ($q) => $q->whereLike('name', "%{$this->productSearch}%")->orWhereLike('brand', "%{$this->productSearch}%")->orWhereLike('model', "%{$this->productSearch}%"))->limit(8)->get() : collect(),
             't' => $this->totals(),
         ])->layout('components.layouts.app', ['title' => $this->quotation ? 'Edit '.$this->quotation->ref : 'New quotation']);
     }

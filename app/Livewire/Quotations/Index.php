@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Quotations;
 
+use App\Http\Middleware\EnsureRole;
 use App\Models\Quotation;
 use App\Services\QuotationActions;
 use Livewire\Attributes\Url;
@@ -12,10 +13,17 @@ class Index extends Component
 {
     use WithPagination;
 
-    #[Url] public string $q = '';
-    #[Url] public string $status = '';
-    #[Url] public string $kind = '';
+    #[Url]
+    public string $q = '';
+
+    #[Url]
+    public string $status = '';
+
+    #[Url]
+    public string $kind = '';
+
     public ?int $rejecting = null;
+
     public string $reason = '';
 
     public function updated(): void
@@ -25,19 +33,19 @@ class Index extends Component
 
     public function markSent(int $id): void
     {
-        \App\Http\Middleware\EnsureRole::write('quotations');
+        EnsureRole::write('quotations');
         app(QuotationActions::class)->markSent(Quotation::findOrFail($id));
     }
 
     public function approve(int $id): void
     {
-        \App\Http\Middleware\EnsureRole::write('quotations');
+        EnsureRole::write('quotations');
         app(QuotationActions::class)->approve(Quotation::findOrFail($id));
     }
 
     public function reject(): void
     {
-        \App\Http\Middleware\EnsureRole::write('quotations');
+        EnsureRole::write('quotations');
         $this->validate(['reason' => 'required|string|max:200']);
         app(QuotationActions::class)->reject(Quotation::findOrFail($this->rejecting), $this->reason);
         $this->reset('rejecting', 'reason');
@@ -46,7 +54,7 @@ class Index extends Component
     public function render()
     {
         $base = Quotation::query()
-            ->when($this->q, fn ($q) => $q->where(fn ($w) => $w->where('code', 'like', "%{$this->q}%")->orWhere('subject', 'like', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$this->q}%"))))
+            ->when($this->q, fn ($q) => $q->where(fn ($w) => $w->whereLike('code', "%{$this->q}%")->orWhereLike('subject', "%{$this->q}%")->orWhereHas('customer', fn ($c) => $c->whereLike('name', "%{$this->q}%"))))
             ->when($this->kind, fn ($q) => $q->where('kind', $this->kind));
         $counts = (clone $base)->selectRaw('status, count(*) c, sum(total) v')->groupBy('status')->get()->keyBy('status');
         $quotations = (clone $base)
