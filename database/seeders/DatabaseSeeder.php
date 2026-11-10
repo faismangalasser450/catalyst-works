@@ -19,6 +19,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (User::query()->exists()) {
+            $this->command?->warn('Sample data already present; skipping seed.');
+
+            return;
+        }
+
         mt_srand(7);
 
         foreach ([
@@ -131,6 +137,7 @@ class DatabaseSeeder extends Seeder
             $enq->activities()->create(['user_id' => $sp->id, 'action' => 'created', 'created_at' => $date]);
             if ($days < 4 && rand(0, 1)) {
                 $enq->update(['follow_up_on' => now()->addDays(rand(0, 3))]);
+
                 continue;
             }
 
@@ -161,11 +168,13 @@ class DatabaseSeeder extends Seeder
             $roll = rand(1, 10);
             if ($days < 7 || $roll <= 2) {
                 $q->update(['status' => $days < 2 ? 'draft' : 'sent', 'sent_at' => $date->copy()->addDay()]);
+
                 continue;
             }
             if ($roll <= 4) {
                 $q->update(['status' => 'rejected', 'decided_at' => $date->copy()->addDays(rand(3, 12)), 'lost_reason' => ['Price too high', 'Went with another supplier', 'Project postponed'][rand(0, 2)]]);
                 $enq->update(['status' => 'lost']);
+
                 continue;
             }
             $decided = $date->copy()->addDays(rand(2, 10));
@@ -187,6 +196,7 @@ class DatabaseSeeder extends Seeder
                 $contract->visits()->where('scheduled_on', '<', now())->get()->each(fn ($v) => $v->update(['status' => rand(0, 7) ? 'done' : 'missed', 'done_on' => $v->scheduled_on->copy()->addDays(rand(0, 3)), 'technician_id' => $techs[rand(0, 2)]->id]));
                 $q->update(['status' => 'invoiced']);
                 $this->invoice($q, $decided, $admin, ['amc_contract_id' => $contract->id, 'kind' => 'amc']);
+
                 continue;
             }
 
@@ -199,6 +209,7 @@ class DatabaseSeeder extends Seeder
             $q->update(['status' => 'ordered']);
             if ($days < 25) {
                 $order->update(['status' => rand(0, 1) ? 'in_progress' : 'confirmed']);
+
                 continue;
             }
             $order->update(['status' => 'delivered', 'delivered_on' => $order->due_date->copy()->subDays(rand(0, 5))]);
@@ -252,6 +263,7 @@ class DatabaseSeeder extends Seeder
             $c->activities()->create(['user_id' => $tech->id, 'action' => 'visit', 'note' => 'Site visit logged', 'created_at' => $visit]);
             if ($hours < 120 && rand(0, 1)) {
                 $c->update(['status' => rand(0, 1) ? 'in_progress' : 'visited']);
+
                 continue;
             }
             if (rand(0, 2) === 0) {
