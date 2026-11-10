@@ -1,0 +1,12 @@
+.git
+node_modules
+vendor
+public/build
+public/hot
+storage/logs/*
+database/database.sqlite
+.env
+.env.*
+tests
+.claude
+.ai
