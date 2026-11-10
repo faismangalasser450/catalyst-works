@@ -2,7 +2,7 @@
 <x-layouts.app :title="$i->code">
     <x-page :title="$i->code.' · '.$i->customer->name" :sub="'Dated '.dmy($i->date).' · due '.dmy($i->due_date).($i->lpo_number ? ' · LPO '.$i->lpo_number : '')" :back="route('invoices.index')">
         <x-slot:actions>
-            <x-badge :status="$i->status" />
+            <x-badge :status="$i->status" />@if($i->isOverdue())<x-badge status="overdue" />@endif
             <a href="{{ route('invoices.pdf', $i) }}" target="_blank" class="btn">PDF</a>
             @if($i->status !== 'cancelled' && $i->paid_amount == 0)<form method="post" action="{{ route('invoices.cancel', $i) }}" onsubmit="return confirm('Cancel {{ $i->code }}?')">@csrf<button class="btn btn-danger">Cancel invoice</button></form>@endif
         </x-slot:actions>

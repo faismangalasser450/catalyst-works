@@ -30,7 +30,7 @@
             <table class="tbl"><tbody>
                 @forelse($c->quotations->take(8) as $x)<tr><td><a href="{{ route('quotations.show', $x) }}" class="font-medium text-brand-700">{{ $x->ref }}</a><div class="max-w-xs truncate text-xs text-slate-500">{{ $x->subject }}</div></td><td class="text-xs text-slate-500">{{ dmy($x->date) }}</td><td class="text-right">{{ money($x->total) }}</td><td><x-badge :status="$x->status" /></td></tr>
                 @empty<tr><td class="py-6 text-center text-slate-500">No quotations yet.</td></tr>@endforelse
-                @foreach($c->enquiries->where('status', 'open') as $e)<tr><td><a href="{{ route('enquiries.show', $e) }}" class="font-medium text-brand-700">{{ $e->code }}</a><div class="text-xs text-slate-500">{{ $e->type }}</div></td><td class="text-xs text-slate-500">{{ dmy($e->date) }}</td><td></td><td><x-badge status="open" label="Enquiry open" /></td></tr>@endforeach
+                @foreach($c->enquiries->where('status', 'open') as $e)<tr><td><a href="{{ route('enquiries.show', $e) }}" class="font-medium text-brand-700">{{ $e->code }}</a><div class="text-xs text-slate-500">{{ $e->type }}</div></td><td class="text-xs text-slate-500">{{ dmy($e->date) }}</td><td></td><td><x-badge status="open" kind="enquiry" label="Enquiry open" /></td></tr>@endforeach
             </tbody></table>
         </div>
         <div class="card">

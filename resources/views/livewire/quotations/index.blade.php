@@ -7,7 +7,7 @@
         <select wire:model.live="kind" class="input w-auto"><option value="">Sales + AMC</option><option value="sales">Sales</option><option value="amc">AMC</option></select>
         <div class="flex flex-wrap gap-1.5">
             <button wire:click="$set('status','')" class="chip {{ $status === '' ? 'chip-on' : '' }}">Active</button>
-            @foreach(\App\Models\Quotation::STATUSES as $k => $l)<button wire:click="$set('status','{{ $k }}')" class="chip {{ $status === $k ? 'chip-on' : '' }}" title="{{ money($counts[$k]->v ?? 0, true) }}">{{ $l }} {{ $counts[$k]->c ?? 0 }}</button>@endforeach
+            @foreach(\App\Models\Quotation::STATUSES as $k => $l)<button wire:click="$set('status','{{ $k }}')" class="chip {{ $status === $k ? 'chip-on' : '' }}" title="{{ money($counts[$k]->v ?? 0, true) }}"><span class="dot mr-1.5 {{ status_dot($k) }}"></span>{{ $l }} {{ $counts[$k]->c ?? 0 }}</button>@endforeach
             <button wire:click="$set('status','all')" class="chip {{ $status === 'all' ? 'chip-on' : '' }}">All</button>
         </div>
     </div>
@@ -31,7 +31,7 @@
                     <td><x-badge :status="$q->status" />@if($q->lost_reason)<div class="max-w-[10rem] truncate text-xs text-slate-500">{{ $q->lost_reason }}</div>@endif</td>
                     <td class="whitespace-nowrap text-right">
                         @if($q->status === 'draft')<button wire:click="markSent({{ $q->id }})" class="btn btn-sm">Mark sent</button>@endif
-                        @if($q->isOpen())<button wire:click="approve({{ $q->id }})" class="btn btn-sm btn-primary">Approve</button> <button wire:click="$set('rejecting', {{ $q->id }})" class="btn btn-sm">Reject</button>@endif
+                        @if($q->isOpen())<button wire:click="approve({{ $q->id }})" class="btn btn-sm btn-ok">Approve</button> <button wire:click="$set('rejecting', {{ $q->id }})" class="btn btn-sm btn-danger">Reject</button>@endif
                         @if($q->status === 'approved')<a href="{{ route('quotations.order', $q) }}" class="btn btn-sm btn-primary">{{ $q->kind === 'amc' ? 'Start AMC' : 'Create order' }}</a>@endif
                         <a href="{{ route('quotations.pdf', $q) }}" target="_blank" class="btn btn-sm">PDF</a>
                     </td>

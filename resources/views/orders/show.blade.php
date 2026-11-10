@@ -2,8 +2,9 @@
 <x-layouts.app :title="$o->code">
     <x-page :title="$o->code.' · '.$o->customer->name" :sub="$o->quotation?->subject" :back="route('orders.index')">
         <x-slot:actions>
-            <x-badge :status="$o->status" />
-            @foreach(\App\Models\Order::STATUSES as $k => $l)@if($k !== $o->status && $k !== 'confirmed')<form method="post" action="{{ route('orders.status', $o) }}">@csrf<input type="hidden" name="status" value="{{ $k }}"><button class="btn {{ $k === 'delivered' ? 'btn-primary' : '' }}">{{ $l }}</button></form>@endif @endforeach
+            <x-status-menu :status="$o->status" :options="\App\Models\Order::STATUSES" :action="route('orders.status', $o)" />
+            @php($next = ['confirmed' => 'in_progress', 'in_progress' => 'delivered', 'delivered' => 'closed'][$o->status] ?? null)
+            @if($next)<form method="post" action="{{ route('orders.status', $o) }}">@csrf<input type="hidden" name="status" value="{{ $next }}"><button class="btn {{ status_solid($next) }}">Mark {{ strtolower(\App\Models\Order::STATUSES[$next]) }}</button></form>@endif
             @if($o->invoice)<a href="{{ route('invoices.show', $o->invoice) }}" class="btn">Invoice {{ $o->invoice->code }}</a>@elseif($o->quotation)<a href="{{ route('quotations.invoice', $o->quotation) }}" class="btn btn-primary">Create invoice</a>@endif
         </x-slot:actions>
     </x-page>

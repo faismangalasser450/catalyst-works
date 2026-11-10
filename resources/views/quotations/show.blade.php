@@ -6,8 +6,8 @@
             <a href="{{ route('quotations.pdf', $q) }}" target="_blank" class="btn">PDF</a>
             @if($q->status === 'draft')<a href="{{ route('quotations.edit', $q) }}" class="btn">Edit</a><form method="post" action="{{ route('quotations.sent', $q) }}">@csrf<button class="btn">Mark sent</button></form>@endif
             @if($q->isOpen())
-                <form method="post" action="{{ route('quotations.approve', $q) }}">@csrf<button class="btn btn-primary">Customer approved</button></form>
-                <div x-data="{o:false}"><button @click="o=!o" class="btn">Rejected…</button>
+                <form method="post" action="{{ route('quotations.approve', $q) }}">@csrf<button class="btn btn-ok">Customer approved</button></form>
+                <div x-data="{o:false}"><button @click="o=!o" class="btn btn-danger">Rejected…</button>
                     <form x-show="o" x-cloak method="post" action="{{ route('quotations.reject', $q) }}" class="absolute right-6 z-10 mt-1 card card-b flex w-80 gap-2">@csrf<input name="reason" class="input" placeholder="Reason" required><button class="btn btn-danger">Save</button></form>
                 </div>
             @endif

@@ -25,6 +25,10 @@ class Index extends Component
     #[Url]
     public string $period = '';
 
+    public ?int $closing = null;
+
+    public string $note = '';
+
     public function updated($name): void
     {
         $this->resetPage();
@@ -41,8 +45,24 @@ class Index extends Component
     public function setStatus(int $id, string $status): void
     {
         EnsureRole::write('complaints');
-        abort_unless(array_key_exists($status, Complaint::STATUSES) && $status !== 'closed', 422, 'Close from the complaint page so a closing note is recorded.');
-        Complaint::findOrFail($id)->setStatus($status);
+        abort_unless(array_key_exists($status, Complaint::STATUSES), 422);
+        $complaint = Complaint::findOrFail($id);
+        if ($status === 'closed') {
+            $this->closing = $complaint->id;
+            $this->note = '';
+            $this->resetErrorBag();
+
+            return;
+        }
+        $complaint->setStatus($status);
+    }
+
+    public function close(): void
+    {
+        EnsureRole::write('complaints');
+        $this->validate(['note' => 'required|string|max:1000'], ['note.required' => 'Write what was done before closing.']);
+        Complaint::findOrFail($this->closing)->setStatus('closed', $this->note);
+        $this->reset('closing', 'note');
     }
 
     public function render()
@@ -66,6 +86,7 @@ class Index extends Component
         return view('livewire.complaints.index', [
             'complaints' => $complaints,
             'counts' => $counts,
+            'closingComplaint' => $this->closing ? Complaint::with('customer')->find($this->closing) : null,
             'technicians' => User::where('role', 'technician')->where('active', true)->orderBy('name')->get(),
         ])->layout('components.layouts.app', ['title' => 'Complaints']);
     }

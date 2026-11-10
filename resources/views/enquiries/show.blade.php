@@ -2,7 +2,7 @@
 <x-layouts.app :title="$e->code">
     <x-page :title="$e->code.' · '.$e->customer->name" :sub="$e->type.' · '.dmy($e->date).' · via '.$e->source.' · '.$e->user->name" :back="route('enquiries.index')">
         <x-slot:actions>
-            <x-badge :status="$e->status" />
+            <x-badge :status="$e->status" kind="enquiry" />
             @if($e->status === 'open')<a href="{{ route('quotations.create', ['enquiry' => $e->id]) }}" class="btn btn-primary">Create quotation</a>@endif
             <a href="{{ route('enquiries.edit', $e) }}" class="btn">Edit</a>
         </x-slot:actions>

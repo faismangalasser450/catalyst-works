@@ -35,7 +35,12 @@
     .tbl th { @apply border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500 whitespace-nowrap; }
     .tbl td { @apply border-b border-slate-100 px-3 py-2.5 align-middle; }
     .tbl tbody tr:hover { @apply bg-brand-50/40; }
-    .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap; }
+    .badge { @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold whitespace-nowrap ring-1 ring-inset; }
+    .badge-btn { @apply cursor-pointer hover:brightness-95 focus:outline-none focus:ring-2; }
+    .dot { @apply inline-block h-2 w-2 shrink-0 rounded-full; }
+    .status-menu { @apply fixed z-50 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg; }
+    .status-item { @apply flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-[13px] text-slate-800 hover:bg-slate-100; }
+    .btn-ok { @apply border-green-600 bg-green-600 text-white hover:bg-green-700; }
     .chip { @apply inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-1 text-[13px] text-slate-700 hover:bg-slate-50 whitespace-nowrap; }
     .chip-on, .peer:checked + .chip { @apply border-brand-700 bg-brand-700 text-white hover:bg-brand-700; }
     .navlink { @apply flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-slate-200 hover:bg-white/10; }

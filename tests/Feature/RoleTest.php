@@ -2,9 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Complaints\Show;
+use App\Livewire\Quotations\Index;
 use App\Models\Complaint;
+use App\Models\Quotation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class RoleTest extends TestCase
@@ -33,12 +37,12 @@ class RoleTest extends TestCase
         $this->actingAs($accounts)->get('/settings')->assertForbidden();
 
         $this->actingAs($accounts)->get('/search?q=CMP-')->assertDontSee('CMP-0');
-        $draft = \App\Models\Quotation::where('status', 'sent')->first();
-        \Livewire\Livewire::actingAs($accounts)->test(\App\Livewire\Quotations\Index::class)->call('approve', $draft->id)->assertForbidden();
-        \Livewire\Livewire::actingAs($tech)->test(\App\Livewire\Complaints\Index::class)->call('assign', $c->id, (string) $tech->id)->assertForbidden();
-        \Livewire\Livewire::actingAs($service)->test(\App\Livewire\Complaints\Index::class)->call('setStatus', $c->id, 'closed')->assertStatus(422);
+        $draft = Quotation::where('status', 'sent')->first();
+        Livewire::actingAs($accounts)->test(Index::class)->call('approve', $draft->id)->assertForbidden();
+        Livewire::actingAs($tech)->test(\App\Livewire\Complaints\Index::class)->call('assign', $c->id, (string) $tech->id)->assertForbidden();
+        Livewire::actingAs($service)->test(\App\Livewire\Complaints\Index::class)->call('setStatus', $c->id, 'bogus')->assertStatus(422);
         $this->assertSame('sent', $draft->fresh()->status);
-        \Livewire\Livewire::actingAs($tech)->test(\App\Livewire\Complaints\Show::class, ['complaint' => $c])->call('assign', (string) $tech->id)->assertForbidden();
+        Livewire::actingAs($tech)->test(Show::class, ['complaint' => $c])->call('assign', (string) $tech->id)->assertForbidden();
         $this->actingAs($service)->get('/complaints')->assertOk();
         $this->actingAs($service)->get('/invoices')->assertForbidden();
         $this->actingAs($service)->post(route('complaints.status', $c), ['status' => 'in_progress'])->assertRedirect();

@@ -16,7 +16,7 @@
                     <div>
                         <div class="text-base font-semibold">{{ $c->customer->name }}</div>
                         <div class="text-sm text-slate-600">{{ $c->location }}</div>
-                        <div class="mt-1 text-sm"><span class="font-medium">{{ $c->type }}</span> · {{ $c->equipment }} @if($c->priority === 'high')<span class="badge bg-red-100 text-red-700">Urgent</span>@endif</div>
+                        <div class="mt-1 text-sm"><span class="font-medium">{{ $c->type }}</span> · {{ $c->equipment }} @if($c->priority === 'high')<x-badge status="high" label="Urgent" />@endif</div>
                         <div class="mt-1 text-sm text-slate-600">{{ $c->description }}</div>
                     </div>
                     <div class="text-right text-xs text-slate-500"><a href="{{ route('complaints.show', $c) }}" class="text-brand-700">{{ $c->code }}</a><div>{{ ago($c->reported_at) }} ago</div><div class="mt-1"><x-badge :status="$c->status" /></div></div>
@@ -26,9 +26,9 @@
                     <a href="https://maps.google.com/?q={{ urlencode($c->location.', '.$c->customer->city) }}" target="_blank" class="btn btn-lg">Map</a>
                 </div>
                 <div class="mt-2 grid grid-cols-3 gap-2">
-                    <button wire:click="status({{ $c->id }}, 'visited')" class="btn btn-lg justify-center {{ $c->status === 'visited' ? 'chip-on' : '' }}">Visited</button>
-                    <button wire:click="status({{ $c->id }}, 'in_progress')" class="btn btn-lg justify-center {{ $c->status === 'in_progress' ? 'chip-on' : '' }}">Working</button>
-                    <button wire:click="status({{ $c->id }}, 'closed')" class="btn btn-lg btn-primary justify-center">Close</button>
+                    <button wire:click="status({{ $c->id }}, 'visited')" class="btn btn-lg justify-center {{ $c->status === 'visited' ? status_solid('visited') : '' }}"><span class="dot {{ $c->status === 'visited' ? 'bg-white' : status_dot('visited') }}"></span>Visited</button>
+                    <button wire:click="status({{ $c->id }}, 'in_progress')" class="btn btn-lg justify-center {{ $c->status === 'in_progress' ? status_solid('in_progress') : '' }}"><span class="dot {{ $c->status === 'in_progress' ? 'bg-white' : status_dot('in_progress') }}"></span>Working</button>
+                    <button wire:click="status({{ $c->id }}, 'closed')" class="btn btn-lg btn-ok justify-center">Close</button>
                 </div>
             </div>
         @empty<div class="card card-b py-10 text-center text-slate-500">No open complaints assigned to you.</div>@endforelse

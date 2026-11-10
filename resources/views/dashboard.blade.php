@@ -29,7 +29,7 @@
             <tbody>
             @forelse($openList as $c)
                 <tr>
-                    <td><a href="{{ route('complaints.show', $c) }}" class="font-medium text-brand-700">{{ $c->code }}</a>@if($c->priority==='high') <span class="badge bg-red-50 text-red-700">High</span>@endif</td>
+                    <td><a href="{{ route('complaints.show', $c) }}" class="font-medium text-brand-700">{{ $c->code }}</a>@if($c->priority==='high') <x-badge status="high" label="High" />@endif</td>
                     <td>{{ $c->customer->name }}<div class="text-xs text-slate-500">{{ $c->location }}</div></td>
                     <td>{{ $c->type }}<div class="text-xs text-slate-500">{{ $c->equipment }}</div></td>
                     <td class="{{ $c->isOverdue() ? 'font-medium text-red-600' : '' }}">{{ ago($c->reported_at) }}</td>
@@ -45,11 +45,7 @@
                     </td>
                     <td>
                         @if($u->hasRole('sales','service'))
-                        <form method="post" action="{{ route('complaints.status', $c) }}">@csrf
-                            <select name="status" class="input py-1 text-xs" onchange="this.form.submit()">
-                                @foreach(\App\Models\Complaint::STATUSES as $k => $l)@if($k === 'closed')@continue @endif<option value="{{ $k }}" @selected($c->status === $k)>{{ $l }}</option>@endforeach
-                            </select>
-                        </form>
+                        <x-status-menu :status="$c->status" :options="\App\Models\Complaint::STATUSES" :action="route('complaints.status', $c)" :links="['closed' => route('complaints.show', [$c, 'close' => 1])]" />
                         @else <x-badge :status="$c->status" /> @endif
                     </td>
                 </tr>

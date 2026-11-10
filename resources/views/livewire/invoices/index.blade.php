@@ -32,7 +32,7 @@
                 <td class="whitespace-nowrap {{ $i->isOverdue() ? 'font-medium text-red-600' : '' }}">{{ dmy($i->due_date) }}@if($i->isOverdue())<div class="text-xs">{{ ago($i->due_date) }} late</div>@endif</td>
                 <td class="text-right">{{ money($i->total) }}</td>
                 <td class="text-right font-medium {{ $i->balance > 0 ? 'text-red-600' : '' }}">{{ $i->balance > 0 ? money($i->balance) : '—' }}</td>
-                <td><x-badge :status="$i->status" /></td>
+                <td>@if($i->isOverdue())<x-badge status="overdue" :label="$i->status === 'part_paid' ? 'Part paid, overdue' : 'Overdue'" />@else<x-badge :status="$i->status" />@endif</td>
                 <td class="whitespace-nowrap text-right">@if($i->balance > 0 && $i->status !== 'cancelled')<button wire:click="startPay({{ $i->id }})" class="btn btn-sm btn-primary">Payment</button>@endif <a href="{{ route('invoices.pdf', $i) }}" target="_blank" class="btn btn-sm">PDF</a></td>
             </tr>
         @empty<tr><td colspan="8" class="py-10 text-center text-slate-500">Nothing here.</td></tr>@endforelse

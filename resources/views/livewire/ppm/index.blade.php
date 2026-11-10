@@ -22,7 +22,7 @@
                 <td class="max-w-xs truncate text-slate-600">{{ $v->contract->equipment }}</td>
                 <td><select wire:change="assign({{ $v->id }}, $event.target.value)" class="input w-40 py-1 text-xs"><option value="">Unassigned</option>@foreach($technicians as $t)<option value="{{ $t->id }}" @selected($v->technician_id === $t->id)>{{ $t->name }}</option>@endforeach</select></td>
                 <td>@if($v->status === 'done')<x-badge status="done" label="Done {{ dmy($v->done_on) }}" />@else<x-badge :status="$late ? 'missed' : 'due'" :label="$late ? 'Overdue' : 'Planned'" />@endif</td>
-                <td class="text-right">@if($v->status === 'done')<button wire:click="undo({{ $v->id }})" class="btn btn-sm">Undo</button>@else<button wire:click="done({{ $v->id }})" class="btn btn-sm btn-primary">Done today</button>@endif</td>
+                <td class="text-right">@if($v->status === 'done')<button wire:click="undo({{ $v->id }})" class="btn btn-sm">Undo</button>@else<button wire:click="done({{ $v->id }})" class="btn btn-sm btn-ok">Done today</button>@endif</td>
             </tr>
         @empty<tr><td colspan="7" class="py-10 text-center text-slate-500">Nothing planned here.</td></tr>@endforelse
         </tbody></table><div class="px-4 py-3">{{ $visits->links() }}</div></div>

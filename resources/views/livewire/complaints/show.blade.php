@@ -2,8 +2,12 @@
 <div>
     <x-page :title="$c->code.' · '.$c->customer->name" :sub="$c->type.' · '.$c->equipment.' · '.$c->location" :back="route('complaints.index')">
         <x-slot:actions>
-            <x-badge :status="$c->status" />
-            @if($c->priority === 'high')<span class="badge bg-red-50 text-red-700">High priority</span>@endif
+            @if(\App\Http\Middleware\EnsureRole::allows(auth()->user(), 'complaints', true))
+                <x-status-menu :status="$c->status" :options="\App\Models\Complaint::STATUSES" wire="setStatus('%s')" />
+            @else
+                <x-badge :status="$c->status" />
+            @endif
+            @if($c->priority === 'high')<x-badge status="high" label="High priority" />@endif
             <a href="{{ route('complaints.edit', $c) }}" class="btn btn-sm">Edit</a>
         </x-slot:actions>
     </x-page>
@@ -18,7 +22,7 @@
             <button wire:click="open('visit')" class="btn {{ $panel === 'visit' ? 'btn-primary' : '' }}">Log visit</button>
             <button wire:click="setStatus('in_progress')" class="btn" @disabled($c->status === 'in_progress')>In progress</button>
             <button wire:click="open('material')" class="btn {{ $panel === 'material' ? 'btn-primary' : '' }}">Add material</button>
-            <button wire:click="open('close')" class="btn btn-primary ml-auto">Close complaint</button>
+            <button wire:click="open('close')" class="btn btn-ok ml-auto">Close complaint</button>
         @endif
     </div>
 
@@ -39,7 +43,7 @@
     @elseif($panel === 'close')
         <form wire:submit="close" class="card mb-4 card-b grid gap-3 md:grid-cols-4">
             <x-field label="Closing note" name="closing_note" required class="md:col-span-3"><input wire:model="closing_note" class="input" placeholder="e.g. Gas topped up, cooling OK, customer signed" autofocus></x-field>
-            <div class="flex items-end gap-2"><button class="btn btn-primary">Close complaint</button><button type="button" wire:click="open('')" class="btn">Cancel</button></div>
+            <div class="flex items-end gap-2"><button class="btn btn-ok">Close complaint</button><button type="button" wire:click="open('')" class="btn">Cancel</button></div>
         </form>
     @endif
 

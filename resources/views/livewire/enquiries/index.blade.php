@@ -22,9 +22,9 @@
                     <td class="whitespace-nowrap">{{ dmy($e->date) }}<div class="text-xs text-slate-500">{{ ago($e->date) }} ago</div></td>
                     <td class="text-slate-600">{{ $e->source }}</td>
                     <td class="text-slate-600">{{ $e->user->name }}</td>
-                    <td><x-badge :status="$e->status" />@if($e->quotations_count)<div class="text-xs text-slate-500">{{ $e->quotations_count }} quote{{ $e->quotations_count > 1 ? 's' : '' }}</div>@endif</td>
+                    <td><x-badge :status="$e->status" kind="enquiry" />@if($e->quotations_count)<div class="text-xs text-slate-500">{{ $e->quotations_count }} quote{{ $e->quotations_count > 1 ? 's' : '' }}</div>@endif</td>
                     <td class="whitespace-nowrap text-right">
-                        @if($e->status === 'open')<a href="{{ route('quotations.create', ['enquiry' => $e->id]) }}" class="btn btn-sm btn-primary">Quote</a> <button wire:click="markLost({{ $e->id }})" wire:confirm="Mark {{ $e->code }} as lost?" class="btn btn-sm">Lost</button>@endif
+                        @if($e->status === 'open')<a href="{{ route('quotations.create', ['enquiry' => $e->id]) }}" class="btn btn-sm btn-primary">Quote</a> <button wire:click="markLost({{ $e->id }})" wire:confirm="Mark {{ $e->code }} as lost?" class="btn btn-sm btn-danger">Lost</button>@endif
                     </td>
                 </tr>
             @empty<tr><td colspan="8" class="py-10 text-center text-slate-500">No enquiries here.</td></tr>@endforelse

@@ -72,6 +72,9 @@ class ComplaintController extends Controller
     public function status(Request $request, Complaint $complaint)
     {
         $status = $request->validate(['status' => 'required|in:'.implode(',', array_keys(Complaint::STATUSES))])['status'];
+        if ($status === 'closed') {
+            return redirect()->route('complaints.show', [$complaint, 'close' => 1]);
+        }
         $complaint->setStatus($status);
 
         return back()->with('ok', "$complaint->code is now ".Complaint::STATUSES[$status].'.');
